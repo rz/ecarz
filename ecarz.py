@@ -28,6 +28,9 @@ def get_new_grid(rule, grid):
     if not grid:
         return CELL_CHAR1.center(grid_size, CELL_CHAR0)  # one 1 cell at the middle
     new_grid = ''
+    # the funny arguments in the zip are to get the boundary condition:
+    # for now, start with "blank cell" boundary conditions ie always assume there is a blank
+    # cell to the left and right of the grid's ends
     for i, (l_neighbor, cell, r_neighbor)  in enumerate(zip(CELL_CHAR0 + grid[:-1], grid, grid[1:] + CELL_CHAR0)):
         new_grid += get_new_cell_value(rule, cell, l_neighbor, r_neighbor)
     return new_grid
@@ -39,11 +42,8 @@ if __name__ == '__main__':
     max_steps = 50
     grid = None
 
-    # evolve the automaton for the given number of steps
+    # evolve the automaton for the given number of steps and print each one
     for _ in range(max_steps):
-        # the funny arguments in the zip are to get the boundary condition:
-        # for now, start with "blank cell" boundary conditions ie always assume there is a blank
-        # cell to the left and right of the grid's ends
-       grid = get_new_grid(rule, grid)
-       print(grid)
+      grid = get_new_grid(rule, grid)
+      print(grid)
 
