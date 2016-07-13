@@ -24,6 +24,9 @@ def get_new_cell_value(rule, cell, l_neighbor, r_neighbor):
 
 
 def get_new_grid(rule, grid):
+    # initialize if empty/None
+    if not grid:
+        return CELL_CHAR1.center(grid_size, CELL_CHAR0)  # one 1 cell at the middle
     new_grid = ''
     for i, (l_neighbor, cell, r_neighbor)  in enumerate(zip(CELL_CHAR0 + grid[:-1], grid, grid[1:] + CELL_CHAR0)):
         new_grid += get_new_cell_value(rule, cell, l_neighbor, r_neighbor)
@@ -34,10 +37,7 @@ if __name__ == '__main__':
     rule = 90  # Wolfram convention: http://mathworld.wolfram.com/ElementaryCellularAutomaton.html
     grid_size = 101
     max_steps = 50
-
-    # initialize grid with one 1 cell at the middle
-    grid = CELL_CHAR1.center(grid_size, CELL_CHAR0)
-    print(grid)
+    grid = None
 
     # evolve the automaton for the given number of steps
     for _ in range(max_steps):
