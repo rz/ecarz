@@ -66,7 +66,7 @@ def handle_args():
     if args.grid is None:
         return args.rule, args.grid, args.grid_size, args.steps, args.char_zero, args.char_one
     else:
-        return args.rule, parse_grid(args.grid), len(args.grid), args.steps, args.char_zero, args.char_one
+        return args.rule, parse_grid(args.grid, args.char_zero, args.char_one), len(args.grid), args.steps, args.char_zero, args.char_one
 
 
 if __name__ == '__main__':
