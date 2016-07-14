@@ -1,11 +1,6 @@
 import argparse
 
 
-# if these change, change the help for the -G flag in parse_args()  # todo: make it so that these can be changed in one place
-CELL_CHAR0 = ' '
-CELL_CHAR1 = '*'
-
-
 def rule_to_values(rule):
     binary_repr = bin(rule)[2:].rjust(8, '0')
     return [int(c) for c in binary_repr]
@@ -37,12 +32,12 @@ def get_new_grid(rule, grid):
     return new_grid
 
 
-def grid_to_string(grid):
-    return ''.join(str(i) for i in grid).replace('0', CELL_CHAR0).replace('1', CELL_CHAR1)
+def grid_to_string(grid, char0, char1):
+    return ''.join(str(i) for i in grid).replace('0', char0).replace('1', char1)
 
 
-def parse_grid(grid_str):
-    return [int(c) for c in grid_str.replace(CELL_CHAR0, '0').replace(CELL_CHAR1, '1')]
+def parse_grid(grid_str, char0, char1):
+    return [int(c) for c in grid_str.replace(char0, '0').replace(char1, '1')]
 
 
 def handle_args():
@@ -58,25 +53,31 @@ def handle_args():
             '-s', '--steps', help='Number of steps to simulate the automaton for',
             type=int, default=50)
     parser.add_argument(
-            '-G', '--grid', help='The initial state of the grid. Specifying this option overrides the grid-size option. An empty cell is represented by a single space character and a filled cell by *.',
+            '-G', '--grid', help='The initial state of the grid. Specifying this option overrides the grid-size option. By default, an empty cell is represented by a single space character and a filled cell by *, but this can be changed with the --char-zero and --char-one options.',
             type=str, default=None)
+    parser.add_argument(
+            '--char-zero', help='The character to use for a cell in state 0 in human-friendly representations. Default is a space.',
+            type=str, default=' ')
+    parser.add_argument(
+            '--char-one', help='The character to use for a cell in state 1 in human-friendly representations. Default is *.',
+            type=str, default='*')
 
     args = parser.parse_args()
     if args.grid is None:
-        return args.rule, args.grid, args.grid_size, args.steps
+        return args.rule, args.grid, args.grid_size, args.steps, args.char_zero, args.char_one
     else:
-        return args.rule, parse_grid(args.grid), len(args.grid), args.steps
+        return args.rule, parse_grid(args.grid), len(args.grid), args.steps, args.char_zero, args.char_one
 
 
 if __name__ == '__main__':
-    rule, grid, grid_size, max_steps = handle_args()
+    rule, grid, grid_size, max_steps, char0, char1 = handle_args()
     if grid is None:
         grid = initialize_grid()
 
-    print(grid_to_string(grid))  # initial step
+    print(grid_to_string(grid, char0, char1))  # initial step
 
     # evolve the automaton for the given number of steps and print each one
     for _ in range(max_steps):
         grid = get_new_grid(rule, grid)
-        print(grid_to_string(grid))
+        print(grid_to_string(grid, char0, char1))
 
