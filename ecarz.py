@@ -63,10 +63,14 @@ def handle_args():
             type=str, default='*')
 
     args = parser.parse_args()
+
     if args.grid is None:
-        return args.rule, args.grid, args.grid_size, args.steps, args.char_zero, args.char_one
+        grid_size = args.grid_size
+        grid = None
     else:
-        return args.rule, parse_grid(args.grid, args.char_zero, args.char_one), len(args.grid), args.steps, args.char_zero, args.char_one
+        grid_size = len(args.grid)
+        grid = parse_grid(args.grid, args.char_zero, args.char_one)
+    return args.rule, grid, grid_size, args.steps, args.char_zero, args.char_one
 
 
 if __name__ == '__main__':
