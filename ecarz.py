@@ -1,7 +1,7 @@
 import argparse
 
 
-def get_new_cell_value(rule, cells):
+def get_next_cell_state(rule, cells):
     # the rule numbers follow the Wolfram convention, so we'll need the binary
     # representation of the given number and we'll use the 3 cells as an index
     # into that representation.
@@ -13,18 +13,18 @@ def get_new_cell_value(rule, cells):
     return next_states[index]
 
 
-def initialize_grid():
-    return [int(c) for c in '1'.center(grid_size, '0')]  # one 1 cell at the middle. hacky, but the center() method is handy
-
-
-def get_new_grid(rule, grid):
+def get_next_grid_state(rule, grid):
     # the funny arguments in the zip are to get the boundary condition:
     # we use "blank cell" boundary conditions ie always assume there is a blank
     # cell to the left and right of the grid's ends.
     # todo: support other types of boundary conditions?
     grid_zip = zip([0] + grid[:-1], grid, grid[1:] + [0])
-    new_grid = [get_new_cell_value(rule, (l, c, r)) for l, c, r in grid_zip]
+    new_grid = [get_next_cell_state(rule, (l, c, r)) for l, c, r in grid_zip]
     return new_grid
+
+
+def initialize_grid():
+    return [int(c) for c in '1'.center(grid_size, '0')]  # one 1 cell at the middle. hacky, but the center() method is handy
 
 
 def grid_to_string(grid, char0, char1):
@@ -77,6 +77,6 @@ if __name__ == '__main__':
 
     # evolve the automaton for the given number of steps and print each one
     for _ in range(max_steps):
-        grid = get_new_grid(rule, grid)
+        grid = get_next_grid_state(rule, grid)
         print(grid_to_string(grid, char0, char1))
 
