@@ -1,6 +1,4 @@
 import argparse
-from collections import OrderedDict
-import itertools
 
 
 # if these change, change the help for the -G flag in parse_args()  # todo: make it so that these can be changed in one place
