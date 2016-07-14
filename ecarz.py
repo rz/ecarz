@@ -1,34 +1,29 @@
 import argparse
 
 
-def rule_to_values(rule):
-    binary_repr = bin(rule)[2:].rjust(8, '0')
-    return [int(c) for c in binary_repr]
-
-
-def cell_states_to_rule_index(cells):
-    assert len(cells) == 3
-    return sum(i * j for i, j in zip(cells, (4, 2, 1)))
-
-
 def get_new_cell_value(rule, cells):
-    # we'll generate a dict with the different possibilities for the triplet as keys and the new cell values
-    # (to represent an index of the binary representation of the rule number
-    # eg rule 54 = 00110110 so, (0, 1, 1) -> 0;  (0, 1, 0) -> 1)
-    i = cell_states_to_rule_index(cells)
-    next_states = rule_to_values(rule)
-    return next_states[i]
+    # the rule numbers follow the Wolfram convention, so we'll need the binary
+    # representation of the given number and we'll use the 3 cells as an index
+    # into that representation.
+    # eg rule 54 is 00110110 (54 in binary) so, (0, 0, 0) -> 0;  (0, 0 ,1) -> 1, (0, 1, 0) -> 1, ...)
+    # see http://mathworld.wolfram.com/ElementaryCellularAutomaton.html for more detail
+    binary_rule_repr = bin(rule)[2:].rjust(8, '0')
+    next_states = [int(c) for c in binary_rule_repr]
+    index = sum(i * j for i, j in zip(cells, (4, 2, 1)))  # this is converting a triplet of zeros and ones to base 10 eg (1, 1, 0) -> 6
+    return next_states[index]
 
 
 def initialize_grid():
-    return [int(c) for c in '1'.center(grid_size, '0')] # one 1 cell at the middle. seems kinda hacky, but the center() method is handy
+    return [int(c) for c in '1'.center(grid_size, '0')]  # one 1 cell at the middle. hacky, but the center() method is handy
 
 
 def get_new_grid(rule, grid):
     # the funny arguments in the zip are to get the boundary condition:
-    # for now, start with "blank cell" boundary conditions ie always assume there is a blank
-    # cell to the left and right of the grid's ends
-    new_grid = [get_new_cell_value(rule, (l_neighbor, cell, r_neighbor)) for l_neighbor, cell, r_neighbor in zip([0] + grid[:-1], grid, grid[1:] + [0])]
+    # we use "blank cell" boundary conditions ie always assume there is a blank
+    # cell to the left and right of the grid's ends.
+    # todo: support other types of boundary conditions?
+    grid_zip = zip([0] + grid[:-1], grid, grid[1:] + [0])
+    new_grid = [get_new_cell_value(rule, (l, c, r)) for l, c, r in grid_zip]
     return new_grid
 
 
