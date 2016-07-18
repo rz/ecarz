@@ -62,7 +62,7 @@ class Grid(collections.UserList):
 
     def get_neighbor_tuples(self):
         if self.dimension == 1:
-            return zip([0] + grid[:-1], grid, grid[1:] + [0])
+            return zip([0] + self[:-1], self, self[1:] + [0])
         else:
             raise NotImplemented
 
@@ -80,7 +80,7 @@ def get_next_cell_state(rule, cells):
     # into that representation.
     # eg rule 54 is 00110110 (54 in binary) so, (0, 0, 0) -> 0;  (0, 0 ,1) -> 1, (0, 1, 0) -> 1, ...)
     # see http://mathworld.wolfram.com/ElementaryCellularAutomaton.html for more detail
-    binary_rule_repr = bin(rule)[2:].rjust(8, '0')
+    binary_rule_repr = bin(rule)[2:].rjust(8, '0')[::-1]
     next_states = [int(c) for c in binary_rule_repr]
     index = sum(i * j for i, j in zip(cells, (4, 2, 1)))  # this is converting a triplet of zeros and ones to base 10 eg (1, 1, 0) -> 6
     return next_states[index]
