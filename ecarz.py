@@ -80,10 +80,11 @@ def get_next_cell_state(rule, cells):
     # into that representation.
     # eg rule 54 is 00110110 (54 in binary) so, (0, 0, 0) -> 0;  (0, 0 ,1) -> 1, (0, 1, 0) -> 1, ...)
     # see http://mathworld.wolfram.com/ElementaryCellularAutomaton.html for more detail
-    binary_rule_repr = bin(rule)[2:].rjust(8, '0')[::-1]
+    neighborhood_size = len(cells)
+    rule_index = sum(i * j for i, j in zip(cells, (2**i for i in reversed(range(neighborhood_size)))))
+    binary_rule_repr = bin(rule)[2:].rjust(2**neighborhood_size, '0')[::-1]
     next_states = [int(c) for c in binary_rule_repr]
-    index = sum(i * j for i, j in zip(cells, (4, 2, 1)))  # this is converting a triplet of zeros and ones to base 10 eg (1, 1, 0) -> 6
-    return next_states[index]
+    return next_states[rule_index]
 
 
 def get_next_grid_state(rule, grid):
