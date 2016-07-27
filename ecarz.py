@@ -120,7 +120,8 @@ def get_next_cell_state(rule, cells):
     # the reversed() in the index and [::-1] i the rule representation are there because the least
     # significant bit is at the right, this way we conform to the Wolfram numbering scheme
     neighborhood_size = len(cells)
-    rule_index = sum(i * j for i, j in zip(cells, (2**i for i in reversed(range(neighborhood_size)))))
+    powers = [2**i for i in range(neighborhood_size)]
+    rule_index = sum(i * j for i, j in zip(cells, reversed(powers)))
     binary_rule_repr = bin(rule)[2:].rjust(2**neighborhood_size, '0')[::-1]
     next_states = [int(c) for c in binary_rule_repr]
     return next_states[rule_index]
@@ -133,8 +134,8 @@ def get_next_grid_state(rule, grid):
     if grid.dimension == 1:
         new_grid.set_state(new_state)
     else:
-        new_state = [new_state[x:x+len(grid)] for x in range(0, len(new_state), len(grid))]  # split the new_state (flat list) into chunks of the right size
-        new_grid.set_state(new_state)
+        ns = [new_state[x:x+len(grid)] for x in range(0, len(new_state), len(grid))]  # split the new_state (flat list) into chunks of the right size
+        new_grid.set_state(ns)
     return new_grid
 
 
@@ -152,14 +153,16 @@ if __name__ == '__main__':
             print(grid)
 
     if dimension == 2:
-        print(grid)
-
         for s in range(steps):
+            if s > 0:
+                delete_output_lines(len(grid) + 1)
+            print(grid)
+            print('Steps so far: %s' % s)
+
             # sleep for a sec, refresh the grid
             time.sleep(0.3)
             grid = get_next_grid_state(rule, grid)
-            delete_output_lines(len(grid))
-            print(grid)
             if grid.is_all_zero():
                 print('All dead after %s steps' % (s+1))
                 break
+
