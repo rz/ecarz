@@ -1,0 +1,7 @@
+separate Grid into its own module
+make 1D and 2D grids OOP: Grid is base class, 1D and 2D are child classes
+tests
+more facilities for specifying initial states, esp in 2d
+more facilities for specifying rules
+
+
