@@ -28,6 +28,12 @@ def handle_args():
     parser.add_argument(
             '--char-one', help='The character to use for a cell in state 1 in human-friendly representations. Default is *.',
             type=str, default='*')
+    parser.add_argument(
+            '--frame-delay', help='The number of milliseconds to display each generation in the 2D case. Default is 100. Ignored when dimension is 1.',
+            type=int, default=100)
+    parser.add_argument(
+            '--random-init', help='If this option is present the grid will be initialized to a random state.',
+            action='store_true')
 
     args = parser.parse_args()
 
@@ -37,7 +43,9 @@ def handle_args():
     else:
         grid_size = args.grid_size
         grid_str = None
-    return args.dimension, args.rule, grid_str, grid_size, args.steps, args.char_zero, args.char_one
+    return (args.dimension, args.rule, grid_str, grid_size, args.steps,
+            args.char_zero, args.char_one,
+            args.frame_delay / 1000, args.random_init)
 
 
 class Grid(collections.UserList):
@@ -140,10 +148,13 @@ def get_next_grid_state(rule, grid):
 
 
 if __name__ == '__main__':
-    dimension, rule, grid_str, grid_size, steps, char0, char1 = handle_args()
+    dimension, rule, grid_str, grid_size, steps, char0, char1, frame_delay, random_init = handle_args()
     grid = Grid(dimension, grid_size, char0=char0, char1=char1)
     if dimension == 1 and grid_str is not None:
         grid.set_state(parse_grid(grid_str, char0, char1))
+
+    if random_init:
+        grid.set_random_state()
 
     if dimension == 1:
         # evolve the automaton for the given number of steps and print each one
@@ -159,8 +170,7 @@ if __name__ == '__main__':
             print(grid)
             print('Steps so far: %s' % s)
 
-            # sleep for a sec, refresh the grid
-            time.sleep(0.3)
+            time.sleep(frame_delay)
             grid = get_next_grid_state(rule, grid)
             if grid.is_all_zero():
                 print('All dead after %s steps' % (s+1))
